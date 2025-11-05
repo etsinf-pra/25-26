@@ -53,7 +53,7 @@ int secuencia(const vector<vector<char>> &matrix, vector<vector<int>> &M, int x,
     // for (int dir = 0; dir < 4; dir++) {
     //     int newX = x + dx[dir];
     //     int newY = y + dy[dir];
-    //     maxLength = max(maxLength, 1 + secuencia(matrix, M,
+    //     maxLength = max(maxLength, 1 + secuencia(matrix, M, newX, newY, nextChar));
 
     M[x][y] = maxLength;
     return maxLength;   

@@ -12,32 +12,25 @@ Utiliza una estrategia de divide y vencerás.
 #include <vector>
 using namespace std;
 
-int sobrescritos(const vector<int> &v, int inicio, int fin) {
-    // Caso base: un solo elemento, no hay sobrescritura
-    if (inicio == fin) {
+int sobrescritos(const vector<int> &v, int inf, int sup) {
+     // Caso base: un solo elemento, no hay sobrescritura
+    if (inf == sup)
         return 0;
-    }
+    // Caso base: cuando quedan dos elementos con ruptura
+    if (inf + 1 == sup)
+        return sup;
     
-    // Si el segmento está ordenado ascendentemente, no hay ruptura aquí
-    if (v[inicio] < v[fin]) {
+    int m = (inf + sup) / 2;
+    // Buscar la ruptura 
+    if (v[inf] < v[sup])
+       // Si el segmento está ordenado ascendentemente, no hay ruptura aquí
         return 0;
-    }
-    
-    // Si quedan solo dos elementos y hay ruptura, encontramos el punto de ruptura
-    if (fin - inicio == 1) {
-        return fin;
-    }
-    
-    int medio = inicio + (fin - inicio) / 2;
-    
-    // Buscar la ruptura (donde v[i] > v[i+1])
-    if (v[medio] > v[fin]) {
+    else if (v[m] > v[sup])
         // La ruptura está a la derecha
-        return sobrescritos(v, medio, fin);
-    } else {
+        return sobrescritos(v, m, sup);
+    else
         // La ruptura está a la izquierda
-        return sobrescritos(v, inicio, medio);
-    }
+        return sobrescritos(v, inf, m);
 }
 
 
@@ -47,7 +40,7 @@ int main() {
     cout << "Vector: {18, 21, 32, 12, 15, 16}" << endl;
     cout << "Elementos sobrescritos: " << sobrescritos(v1, 0, v1.size() - 1) << " (esperado: 3)\n" << endl;
     
-    // Caso 2: Sin sobrescritura (totalmente ascendente)
+    // Caso 2: Sin sobrescritura
     vector<int> v2 = {1, 2, 3, 4, 5, 6};
     cout << "Vector: {1, 2, 3, 4, 5, 6}" << endl;
     cout << "Elementos sobrescritos: " << sobrescritos(v2, 0, v2.size() - 1) << " (esperado: 0)\n" << endl;

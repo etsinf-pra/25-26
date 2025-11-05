@@ -12,7 +12,7 @@ int suma_vector(const vector<int> &v, int inf, int sup) {
         return 0;
     if (inf == sup)
         return v[inf];
-    int m = inf + (sup - inf) / 2;
+    int m = (inf + sup) / 2;
     return suma_vector(v, inf, m) + suma_vector(v, m + 1, sup);
 }
    
