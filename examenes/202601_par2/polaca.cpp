@@ -10,7 +10,7 @@ Este tipo de expresiones se pueden almacenar en un árbol binario. Se pide
 */
 
 #include <iostream>
-#include <vector>
+#include <list>
 #include <string>   
 using namespace std;
 
@@ -25,12 +25,13 @@ bool esOperador(const string& token) {
     return token == "+" || token == "-" || token == "*" || token == "/";
 }
 
-Node* construir(const vector<string>& tokens, int& i) {
-    string t = tokens[i++];
+Node* construir(list<string>& tokens) {
+    string t = tokens.front();
+    tokens.pop_front();
     Node* nodo = new Node(t);
     if (esOperador(t)) {
-        nodo->izq = construir(tokens, i);
-        nodo->der = construir(tokens, i);
+        nodo->izq = construir(tokens);
+        nodo->der = construir(tokens);
     }
     return nodo;
 }
@@ -53,15 +54,13 @@ void mostrar(Node* nodo) {
 int main() {
     // TODO: construir y recorrer el árbol de una expresión en notación polaca.
     // ejemplo 1: + 2 * 3 5
-    vector<string> tokens = {"+", "2", "*", "3", "5"};
-    int index = 0;
-    Node* raiz = construir(tokens, index);
+    list<string> l1 = {"*", "+", "2", "3", "5"};
+    Node* raiz = construir(l1);
     mostrar(raiz);
     cout << endl;   
     // ejemplo 2: * + 2 3 5
-    tokens = {"*", "+", "2", "3", "5"};
-    index = 0;
-    raiz = construir(tokens, index);
+    list<string> l2 = {"*", "+", "2", "3", "5"};
+    raiz = construir(l2);
     mostrar(raiz);
     cout << endl;   
     return 0;
