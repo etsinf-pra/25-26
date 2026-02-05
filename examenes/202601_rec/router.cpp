@@ -29,28 +29,40 @@ using namespace std;
 struct Router {
     int ip;
     bool visited;
-    vector<Router*> neig; // no se elimina para mantener compatibilidad
     vector<Router*> in;   // vecinos con IP menor (entrantes)
     vector<Router*> out;  // vecinos con IP mayor (salientes)
     Router(int ip_) : ip(ip_), visited(false) {}
 };
 
-// Calcula probabilidades usando una cola ordenada por IP (siempre de menor a mayor)
+// Agrega una conexión dirigida u -> v (u.ip < v.ip)
+void addEdge(Router* u, Router* v) {
+    u->out.push_back(v);
+    v->in.push_back(u);
+}
+
+// Calcula probabilidades usando una cola de prioridad (orden por IP ascendente)
+// Los vecinos se generan con enlaces salientes y el cálculo usa enlaces entrantes.
 void infectado(Router* start, map<int, double>& P) {
-    auto cmp = [](Router* a, Router* b) { return a->ip > b->ip; }; // min-heap por IP
+    auto cmp = [](Router* a, Router* b) { return a->ip > b->ip; };
     priority_queue<Router*, vector<Router*>, decltype(cmp)> pq(cmp);
     pq.push(start);
 
     while (!pq.empty()) {
-        Router* r = pq.top();
+        Router* v = pq.top();
         pq.pop();
-        if (r->visited) continue;
-        r->visited = true;
+        if (v->visited) continue;
+        v->visited = true;
 
-        // Relajar probabilidades de los vecinos salientes (IP mayor)
-        for (Router* v : r->neig) {
-            P[v->ip] = 1.0 - (1.0 - P[v->ip]) * (1.0 - P[r->ip] * 0.5);
-            pq.push(v);
+        // Actualizar v a partir de sus enlaces entrantes
+        for (Router* u : v->in) {
+            P[v->ip] = 1.0 - (1.0 - P[v->ip]) * (1.0 - P[u->ip] * 0.5);
+        }
+
+        // Generar vecinos usando enlaces salientes
+        for (Router* w : v->out) {
+            if (!w->visited) {
+                pq.push(w);
+            }
         }
     }
 }
@@ -66,9 +78,9 @@ int main() {
 
     int n = routers.size();
     // conexiones: 10 ->15, 10 ->20, 15 ->20
-    routers[0]->neig = routers[0]->out;
-    routers[1]->neig = routers[1]->out;
-    routers[2]->neig = routers[2]->out;
+    addEdge(routers[0], routers[1]);
+    addEdge(routers[0], routers[2]);
+    addEdge(routers[1], routers[2]);
     map<int, double> P;
     for (int i = 0; i < n; ++i) {
         P[routers[i]->ip] = 0.0;
